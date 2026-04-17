@@ -1568,23 +1568,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\balaz\\.nuget\\packages\\": {},
+    "C:\\Users\\rbalazs\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\balaz\\source\\repos\\toritanulo\\toritanulo\\toritanulo.csproj",
+      "projectUniqueName": "C:\\Users\\rbalazs\\Source\\Repos\\toritanuloBackend\\toritanulo\\toritanulo.csproj",
       "projectName": "toritanulo",
-      "projectPath": "C:\\Users\\balaz\\source\\repos\\toritanulo\\toritanulo\\toritanulo.csproj",
-      "packagesPath": "C:\\Users\\balaz\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\balaz\\source\\repos\\toritanulo\\toritanulo\\obj\\",
+      "projectPath": "C:\\Users\\rbalazs\\Source\\Repos\\toritanuloBackend\\toritanulo\\toritanulo.csproj",
+      "packagesPath": "C:\\Users\\rbalazs\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\rbalazs\\Source\\Repos\\toritanuloBackend\\toritanulo\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
       ],
       "configFilePaths": [
-        "C:\\Users\\balaz\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\rbalazs\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
@@ -1654,7 +1654,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

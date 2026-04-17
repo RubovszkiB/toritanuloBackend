@@ -125,6 +125,268 @@
         }
       }
     },
+    "/api/Tetelek": {
+      "get": {
+        "tags": [
+          "Tetelek"
+        ],
+        "parameters": [
+          {
+            "name": "q",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelListItemDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelListItemDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelListItemDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Tetelek/{id}": {
+      "get": {
+        "tags": [
+          "Tetelek"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Tetelek/sorszam/{sorszam}": {
+      "get": {
+        "tags": [
+          "Tetelek"
+        ],
+        "parameters": [
+          {
+            "name": "sorszam",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelDetailDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TetelProgress/{tetelId}": {
+      "get": {
+        "tags": [
+          "TetelProgress"
+        ],
+        "parameters": [
+          {
+            "name": "tetelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "TetelProgress"
+        ],
+        "parameters": [
+          {
+            "name": "tetelId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTetelProgressRequestDto"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTetelProgressRequestDto"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveTetelProgressRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TetelProgressDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/TetelProgress/recent": {
+      "get": {
+        "tags": [
+          "TetelProgress"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelProgressDto"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelProgressDto"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TetelProgressDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Users": {
       "get": {
         "tags": [
@@ -529,6 +791,18 @@
         },
         "additionalProperties": false
       },
+      "SaveTetelProgressRequestDto": {
+        "type": "object",
+        "properties": {
+          "haladasSzazalek": {
+            "maximum": 100,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
       "SetPasswordRequestDto": {
         "required": [
           "newPassword"
@@ -539,6 +813,91 @@
             "maxLength": 100,
             "minLength": 6,
             "type": "string"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TetelDetailDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sorszam": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cim": {
+            "type": "string",
+            "nullable": true
+          },
+          "forrasFajlnev": {
+            "type": "string",
+            "nullable": true
+          },
+          "tartalom": {
+            "type": "string",
+            "nullable": true
+          },
+          "bekezdesDb": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "aktiv": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TetelListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "sorszam": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "cim": {
+            "type": "string",
+            "nullable": true
+          },
+          "bekezdesDb": {
+            "type": "integer",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false
+      },
+      "TetelProgressDto": {
+        "type": "object",
+        "properties": {
+          "tetelId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "haladasSzazalek": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "vanMentes": {
+            "type": "boolean"
+          },
+          "utolsoMentesAt": {
+            "type": "string",
+            "format": "date-time",
+            "nullable": true
           }
         },
         "additionalProperties": false
