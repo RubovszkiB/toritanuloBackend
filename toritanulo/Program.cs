@@ -15,6 +15,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"))
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+
 builder.Services.AddSwaggerGen(options =>
 {
     options.SwaggerDoc("v1", new OpenApiInfo
@@ -67,8 +68,7 @@ builder.Services.AddCors(options =>
                 "http://localhost:5173",
                 "https://localhost:5173",
                 "http://localhost:3000",
-                "https://localhost:3000"
-            )
+                "https://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -107,12 +107,14 @@ app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     var dbContext = services.GetRequiredService<ApplicationDbContext>();
+
     dbContext.Database.EnsureCreated();
     await DatabaseSeeder.SeedAsync(services);
 }

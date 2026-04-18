@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace toritanulo.Models;
 
-public class User
+public class User : IHasTimestamps
 {
     public int Id { get; set; }
 
@@ -29,4 +29,7 @@ public class User
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<TetelOlvasasiAllapot> TetelOlvasasiAllapotok { get; set; } = new List<TetelOlvasasiAllapot>();
+    public ICollection<TesztProbalkozas> TesztProbalkozasok { get; set; } = new List<TesztProbalkozas>();
 }

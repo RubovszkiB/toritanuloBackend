@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("toritanulo")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8053fa439fceb5dee4ac0d87ae22bcf0db4da67c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96d54f994c9513070db936655496dc4804d89eb1")]
 [assembly: System.Reflection.AssemblyProductAttribute("toritanulo")]
 [assembly: System.Reflection.AssemblyTitleAttribute("toritanulo")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
