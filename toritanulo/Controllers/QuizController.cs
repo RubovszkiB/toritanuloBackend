@@ -46,8 +46,12 @@ public class QuizController : ControllerBase
 
     [AllowAnonymous]
     [HttpGet("tesztek")]
-    public async Task<ActionResult<List<QuizTesztListItemDto>>> GetTesztek([FromQuery] int? temakorId = null)
+    [HttpGet("tests")]
+    public async Task<ActionResult<List<QuizTesztListItemDto>>> GetTesztek([FromQuery] int? temakorId = null, [FromQuery] int? topicId = null, [FromQuery] string? tipus = null, [FromQuery] string? type = null)
     {
+        var selectedTemakorId = temakorId ?? topicId;
+        var selectedType = string.IsNullOrWhiteSpace(tipus) ? type : tipus;
+
         var query = _dbContext.Tesztek
             .AsNoTracking()
             .Include(x => x.Temakor)
@@ -55,9 +59,14 @@ public class QuizController : ControllerBase
             .Where(x => x.Aktiv)
             .AsQueryable();
 
-        if (temakorId.HasValue)
+        if (selectedTemakorId.HasValue)
         {
-            query = query.Where(x => x.TemakorId == temakorId.Value);
+            query = query.Where(x => x.TemakorId == selectedTemakorId.Value);
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedType))
+        {
+            query = query.Where(x => x.TesztTipus == selectedType.Trim().ToLower());
         }
 
         var tesztek = await query
@@ -79,6 +88,23 @@ public class QuizController : ControllerBase
         if (teszt is null)
         {
             return NotFound(new { message = "A teszt nem található." });
+        }
+
+        return Ok(MapTesztReszletek(teszt));
+    }
+
+    [AllowAnonymous]
+    [HttpGet("tesztek/slug/{slug}")]
+    [HttpGet("tests/{slug}")]
+    public async Task<ActionResult<QuizTesztReszletekDto>> GetTesztBySlug(string slug)
+    {
+        var teszt = await LoadTesztForPlay()
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Slug == slug && x.Aktiv);
+
+        if (teszt is null)
+        {
+            return NotFound(new { message = "A teszt nem talalhato." });
         }
 
         return Ok(MapTesztReszletek(teszt));
@@ -406,6 +432,7 @@ public class QuizController : ControllerBase
                     KerdesTipusNev = x.Kerdes.KerdesTipus.Nev,
                     KerdesSzoveg = x.Kerdes.KerdesSzoveg,
                     Instrukcio = x.Kerdes.Instrukcio,
+                    Magyarazat = x.Kerdes.Magyarazat,
                     Pontszam = x.Pontszam,
                     Nehezseg = x.Kerdes.Nehezseg,
                     ValaszOpcioK = x.Kerdes.ValaszOpcioK
@@ -414,6 +441,8 @@ public class QuizController : ControllerBase
                         {
                             Id = v.Id,
                             ValaszSzoveg = v.ValaszSzoveg,
+                            Helyes = v.Helyes,
+                            HelyesSorrend = v.HelyesSorrend,
                             Sorszam = v.Sorszam
                         })
                         .ToList(),
@@ -422,7 +451,18 @@ public class QuizController : ControllerBase
                         .Select(p => new QuizKerdesParDto
                         {
                             BalOldal = p.BalOldal,
+                            JobbOldal = p.JobbOldal,
                             Sorszam = p.Sorszam
+                        })
+                        .ToList(),
+                    HelyesValaszok = x.Kerdes.HelyesValaszok
+                        .OrderBy(h => h.Id)
+                        .Select(h => new QuizHelyesValaszDto
+                        {
+                            ValaszSzoveg = h.ValaszSzoveg,
+                            ValaszSzam = h.ValaszSzam,
+                            Era = h.Era,
+                            NormalizaltValasz = h.NormalizaltValasz
                         })
                         .ToList()
                 })

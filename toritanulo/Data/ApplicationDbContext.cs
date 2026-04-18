@@ -248,7 +248,7 @@ public class ApplicationDbContext : DbContext
             entity.Property(x => x.Slug).HasColumnName("slug").HasMaxLength(150).IsRequired();
             entity.Property(x => x.Cim).HasColumnName("cim").HasMaxLength(255).IsRequired();
             entity.Property(x => x.Leiras).HasColumnName("leiras").HasColumnType("text");
-            entity.Property(x => x.TesztTipus).HasColumnName("teszt_tipus").HasColumnType("enum('evszam','vegyes')").HasDefaultValue("evszam").IsRequired();
+            entity.Property(x => x.TesztTipus).HasColumnName("teszt_tipus").HasColumnType("enum('evszam','szemely','vegyes')").HasDefaultValue("evszam").IsRequired();
             entity.Property(x => x.Nehezseg).HasColumnName("nehezseg").HasColumnType("enum('konnyu','kozepes','nehez')").HasDefaultValue("konnyu").IsRequired();
             entity.Property(x => x.IdokeretMp).HasColumnName("idokeret_mp");
             entity.Property(x => x.Aktiv).HasColumnName("aktiv").HasDefaultValue(true).IsRequired();

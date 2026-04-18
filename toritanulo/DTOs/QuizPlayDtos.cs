@@ -31,13 +31,24 @@ public class QuizValaszOpcioDto
 {
     public int Id { get; set; }
     public string ValaszSzoveg { get; set; } = string.Empty;
+    public bool Helyes { get; set; }
+    public int? HelyesSorrend { get; set; }
     public int Sorszam { get; set; }
 }
 
 public class QuizKerdesParDto
 {
     public string BalOldal { get; set; } = string.Empty;
+    public string JobbOldal { get; set; } = string.Empty;
     public int Sorszam { get; set; }
+}
+
+public class QuizHelyesValaszDto
+{
+    public string? ValaszSzoveg { get; set; }
+    public int? ValaszSzam { get; set; }
+    public string Era { get; set; } = "NONE";
+    public string NormalizaltValasz { get; set; } = string.Empty;
 }
 
 public class QuizKerdesDto
@@ -47,10 +58,12 @@ public class QuizKerdesDto
     public string KerdesTipusNev { get; set; } = string.Empty;
     public string KerdesSzoveg { get; set; } = string.Empty;
     public string? Instrukcio { get; set; }
+    public string? Magyarazat { get; set; }
     public int Pontszam { get; set; }
     public int Nehezseg { get; set; }
     public List<QuizValaszOpcioDto> ValaszOpcioK { get; set; } = new();
     public List<QuizKerdesParDto> Parok { get; set; } = new();
+    public List<QuizHelyesValaszDto> HelyesValaszok { get; set; } = new();
 }
 
 public class QuizTesztReszletekDto : QuizTesztListItemDto
