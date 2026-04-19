@@ -426,7 +426,7 @@ CREATE TABLE `tetel_olvasasi_allapotok` (
   KEY `idx_tetel_progress_user_updated` (`user_id`,`updated_at`),
   CONSTRAINT `fk_tetel_progress_tetel` FOREIGN KEY (`tetel_id`) REFERENCES `tetelek` (`id`) ON DELETE CASCADE,
   CONSTRAINT `fk_tetel_progress_user` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_hungarian_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -435,7 +435,7 @@ CREATE TABLE `tetel_olvasasi_allapotok` (
 
 LOCK TABLES `tetel_olvasasi_allapotok` WRITE;
 /*!40000 ALTER TABLE `tetel_olvasasi_allapotok` DISABLE KEYS */;
-INSERT INTO `tetel_olvasasi_allapotok` VALUES (1,2,2,86,'2026-04-17 16:04:49','2026-04-17 08:36:29','2026-04-17 18:04:49');
+INSERT INTO `tetel_olvasasi_allapotok` VALUES (1,2,2,86,'2026-04-17 16:04:49','2026-04-17 08:36:29','2026-04-17 18:04:49'),(2,2,5,0,'2026-04-19 10:32:44','2026-04-19 10:32:33','2026-04-19 12:32:44');
 /*!40000 ALTER TABLE `tetel_olvasasi_allapotok` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -508,6 +508,10 @@ INSERT INTO `users` VALUES (1,'balazs','balazs@toritanulo.local','AQAAAAIAAYagAA
 UNLOCK TABLES;
 
 --
+-- Dumping events for database 'tortenelem_tanulo'
+--
+
+--
 -- Dumping routines for database 'tortenelem_tanulo'
 --
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -520,4 +524,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-19  0:15:43
+-- Dump completed on 2026-04-19 21:44:13

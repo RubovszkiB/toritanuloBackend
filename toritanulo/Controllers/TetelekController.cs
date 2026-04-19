@@ -18,6 +18,7 @@ public class TetelekController : ControllerBase
         _dbContext = dbContext;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<List<TetelListItemDto>>> GetAll([FromQuery] string? q)
     {
@@ -47,6 +48,7 @@ public class TetelekController : ControllerBase
         return Ok(tetelek);
     }
 
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<TetelDetailDto>> GetById(int id)
     {
@@ -75,6 +77,7 @@ public class TetelekController : ControllerBase
         return Ok(tetel);
     }
 
+    [AllowAnonymous]
     [HttpGet("sorszam/{sorszam:int}")]
     public async Task<ActionResult<TetelDetailDto>> GetBySorszam(int sorszam)
     {
