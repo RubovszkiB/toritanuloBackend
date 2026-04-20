@@ -6,6 +6,10 @@ public class TetelOlvasasiAllapot : IHasTimestamps
     public int UserId { get; set; }
     public int TetelId { get; set; }
     public int HaladasSzazalek { get; set; }
+    public int LastPage { get; set; } = 1;
+    public decimal ScrollProgress { get; set; }
+    public int PageCount { get; set; }
+    public bool Completed { get; set; }
     public DateTime LastOpenedAt { get; set; } = DateTime.UtcNow;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;

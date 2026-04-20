@@ -13,12 +13,42 @@ namespace toritanulo.Controllers;
 [Authorize]
 public class TetelProgressController : ControllerBase
 {
-    private const int MaxMentettTetelDb = 5;
+    private const int RecentTetelDb = 5;
     private readonly ApplicationDbContext _dbContext;
 
     public TetelProgressController(ApplicationDbContext dbContext)
     {
         _dbContext = dbContext;
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<List<TetelProgressDto>>> GetAll()
+    {
+        var userId = GetUserId();
+        if (userId is null)
+        {
+            return Unauthorized(new { message = "A felhasználó azonosítása nem sikerült." });
+        }
+
+        var mentettLista = await _dbContext.TetelOlvasasiAllapotok
+            .AsNoTracking()
+            .Where(x => x.UserId == userId.Value)
+            .OrderByDescending(x => x.UpdatedAt)
+            .ThenByDescending(x => x.Id)
+            .Select(x => new TetelProgressDto
+            {
+                TetelId = x.TetelId,
+                HaladasSzazalek = x.HaladasSzazalek,
+                LastPage = x.LastPage < 1 ? 1 : x.LastPage,
+                ScrollProgress = x.ScrollProgress,
+                PageCount = x.PageCount,
+                Completed = x.Completed,
+                VanMentes = true,
+                UtolsoMentesAt = x.UpdatedAt
+            })
+            .ToListAsync();
+
+        return Ok(mentettLista);
     }
 
     [HttpGet("{tetelId:int}")]
@@ -42,18 +72,16 @@ public class TetelProgressController : ControllerBase
             {
                 TetelId = tetelId,
                 HaladasSzazalek = 0,
+                LastPage = 1,
+                ScrollProgress = 0,
+                PageCount = 0,
+                Completed = false,
                 VanMentes = false,
                 UtolsoMentesAt = null
             });
         }
 
-        return Ok(new TetelProgressDto
-        {
-            TetelId = mentettAllapot.TetelId,
-            HaladasSzazalek = mentettAllapot.HaladasSzazalek,
-            VanMentes = true,
-            UtolsoMentesAt = mentettAllapot.UpdatedAt
-        });
+        return Ok(ToDto(mentettAllapot, true));
     }
 
     [HttpPut("{tetelId:int}")]
@@ -80,6 +108,11 @@ public class TetelProgressController : ControllerBase
         }
 
         var now = DateTime.UtcNow;
+        var lastPage = Math.Max(1, request.LastPage);
+        var pageCount = Math.Max(0, request.PageCount);
+        var scrollProgress = Math.Clamp(request.ScrollProgress, 0, 1);
+        var haladasSzazalek = request.Completed ? 100 : Math.Clamp(request.HaladasSzazalek, 0, 100);
+        var completed = request.Completed || haladasSzazalek >= 100;
 
         var meglevo = await _dbContext.TetelOlvasasiAllapotok
             .Where(x => x.UserId == userId.Value && x.TetelId == tetelId)
@@ -87,51 +120,41 @@ public class TetelProgressController : ControllerBase
 
         if (meglevo is not null)
         {
-            meglevo.HaladasSzazalek = request.HaladasSzazalek;
+            meglevo.HaladasSzazalek = haladasSzazalek;
+            meglevo.LastPage = lastPage;
+            meglevo.ScrollProgress = scrollProgress;
+            meglevo.PageCount = pageCount;
+            meglevo.Completed = completed;
             meglevo.LastOpenedAt = now;
             meglevo.UpdatedAt = now;
         }
         else
         {
-            var userMentesei = await _dbContext.TetelOlvasasiAllapotok
-                .Where(x => x.UserId == userId.Value)
-                .OrderByDescending(x => x.UpdatedAt)
-                .ThenByDescending(x => x.Id)
-                .ToListAsync();
-
-            if (userMentesei.Count < MaxMentettTetelDb)
+            _dbContext.TetelOlvasasiAllapotok.Add(new TetelOlvasasiAllapot
             {
-                _dbContext.TetelOlvasasiAllapotok.Add(new TetelOlvasasiAllapot
-                {
-                    UserId = userId.Value,
-                    TetelId = tetelId,
-                    HaladasSzazalek = request.HaladasSzazalek,
-                    LastOpenedAt = now,
-                    CreatedAt = now,
-                    UpdatedAt = now
-                });
-            }
-            else
-            {
-                var legregebbi = userMentesei
-                    .OrderBy(x => x.UpdatedAt)
-                    .ThenBy(x => x.Id)
-                    .First();
-
-                legregebbi.TetelId = tetelId;
-                legregebbi.HaladasSzazalek = request.HaladasSzazalek;
-                legregebbi.LastOpenedAt = now;
-                legregebbi.UpdatedAt = now;
-            }
+                UserId = userId.Value,
+                TetelId = tetelId,
+                HaladasSzazalek = haladasSzazalek,
+                LastPage = lastPage,
+                ScrollProgress = scrollProgress,
+                PageCount = pageCount,
+                Completed = completed,
+                LastOpenedAt = now,
+                CreatedAt = now,
+                UpdatedAt = now
+            });
         }
 
         await _dbContext.SaveChangesAsync();
-        await TrimToLatestFiveAsync(userId.Value);
 
         return Ok(new TetelProgressDto
         {
             TetelId = tetelId,
-            HaladasSzazalek = request.HaladasSzazalek,
+            HaladasSzazalek = haladasSzazalek,
+            LastPage = lastPage,
+            ScrollProgress = scrollProgress,
+            PageCount = pageCount,
+            Completed = completed,
             VanMentes = true,
             UtolsoMentesAt = now
         });
@@ -151,11 +174,15 @@ public class TetelProgressController : ControllerBase
             .Where(x => x.UserId == userId.Value)
             .OrderByDescending(x => x.UpdatedAt)
             .ThenByDescending(x => x.Id)
-            .Take(MaxMentettTetelDb)
+            .Take(RecentTetelDb)
             .Select(x => new TetelProgressDto
             {
                 TetelId = x.TetelId,
                 HaladasSzazalek = x.HaladasSzazalek,
+                LastPage = x.LastPage < 1 ? 1 : x.LastPage,
+                ScrollProgress = x.ScrollProgress,
+                PageCount = x.PageCount,
+                Completed = x.Completed,
                 VanMentes = true,
                 UtolsoMentesAt = x.UpdatedAt
             })
@@ -173,21 +200,18 @@ public class TetelProgressController : ControllerBase
         return int.TryParse(rawUserId, out var userId) ? userId : null;
     }
 
-    private async Task TrimToLatestFiveAsync(int userId)
+    private static TetelProgressDto ToDto(TetelOlvasasiAllapot allapot, bool vanMentes)
     {
-        var torlendoSorok = await _dbContext.TetelOlvasasiAllapotok
-            .Where(x => x.UserId == userId)
-            .OrderByDescending(x => x.UpdatedAt)
-            .ThenByDescending(x => x.Id)
-            .Skip(MaxMentettTetelDb)
-            .ToListAsync();
-
-        if (torlendoSorok.Count == 0)
+        return new TetelProgressDto
         {
-            return;
-        }
-
-        _dbContext.TetelOlvasasiAllapotok.RemoveRange(torlendoSorok);
-        await _dbContext.SaveChangesAsync();
+            TetelId = allapot.TetelId,
+            HaladasSzazalek = allapot.HaladasSzazalek,
+            LastPage = Math.Max(1, allapot.LastPage),
+            ScrollProgress = allapot.ScrollProgress,
+            PageCount = allapot.PageCount,
+            Completed = allapot.Completed,
+            VanMentes = vanMentes,
+            UtolsoMentesAt = allapot.UpdatedAt
+        };
     }
 }

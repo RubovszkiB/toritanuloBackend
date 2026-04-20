@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 using toritanulo.Data;
 using toritanulo.DTOs;
 using toritanulo.Helpers;
@@ -60,12 +61,6 @@ public class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserResponseDto>> Create(CreateUserRequestDto request)
     {
-        var normalizedRole = RoleHelper.NormalizeRole(request.Role);
-        if (!RoleHelper.IsValidRole(normalizedRole))
-        {
-            return BadRequest(new { message = "A role csak Admin vagy Student lehet." });
-        }
-
         var username = request.Username.Trim();
         var email = request.Email.Trim().ToLowerInvariant();
         var fullName = string.IsNullOrWhiteSpace(request.FullName) ? null : request.FullName.Trim();
@@ -85,7 +80,7 @@ public class UsersController : ControllerBase
             Username = username,
             Email = email,
             FullName = fullName,
-            Role = normalizedRole,
+            Role = RoleHelper.Student,
             IsActive = request.IsActive,
             CreatedAt = DateTime.UtcNow,
             UpdatedAt = DateTime.UtcNow
@@ -108,15 +103,14 @@ public class UsersController : ControllerBase
             return NotFound(new { message = "A felhasználó nem található." });
         }
 
-        var normalizedRole = RoleHelper.NormalizeRole(request.Role);
-        if (!RoleHelper.IsValidRole(normalizedRole))
-        {
-            return BadRequest(new { message = "A role csak Admin vagy Student lehet." });
-        }
-
         var username = request.Username.Trim();
         var email = request.Email.Trim().ToLowerInvariant();
         var fullName = string.IsNullOrWhiteSpace(request.FullName) ? null : request.FullName.Trim();
+
+        if (IsCurrentUser(id) && !request.IsActive)
+        {
+            return BadRequest(new { message = "A saját admin fiókodat nem inaktiválhatod." });
+        }
 
         if (await _dbContext.Users.AnyAsync(u => u.Id != id && u.Username == username))
         {
@@ -131,7 +125,6 @@ public class UsersController : ControllerBase
         user.Username = username;
         user.Email = email;
         user.FullName = fullName;
-        user.Role = normalizedRole;
         user.IsActive = request.IsActive;
 
         await _dbContext.SaveChangesAsync();
@@ -162,6 +155,11 @@ public class UsersController : ControllerBase
             return NotFound(new { message = "A felhasználó nem található." });
         }
 
+        if (IsCurrentUser(id))
+        {
+            return BadRequest(new { message = "A saját admin fiókodat nem törölheted." });
+        }
+
         _dbContext.Users.Remove(user);
         await _dbContext.SaveChangesAsync();
 
@@ -181,5 +179,11 @@ public class UsersController : ControllerBase
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };
+    }
+
+    private bool IsCurrentUser(int userId)
+    {
+        var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        return int.TryParse(currentUserId, out var parsedUserId) && parsedUserId == userId;
     }
 }

@@ -137,6 +137,10 @@ public class ApplicationDbContext : DbContext
             entity.Property(x => x.UserId).HasColumnName("user_id").IsRequired();
             entity.Property(x => x.TetelId).HasColumnName("tetel_id").IsRequired();
             entity.Property(x => x.HaladasSzazalek).HasColumnName("haladas_szazalek").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.LastPage).HasColumnName("last_page").HasDefaultValue(1).IsRequired();
+            entity.Property(x => x.ScrollProgress).HasColumnName("scroll_progress").HasColumnType("decimal(6,5)").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.PageCount).HasColumnName("page_count").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.Completed).HasColumnName("completed").HasDefaultValue(false).IsRequired();
             entity.Property(x => x.LastOpenedAt).HasColumnName("last_opened_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
             entity.Property(x => x.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
             entity.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();

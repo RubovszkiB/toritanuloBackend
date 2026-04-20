@@ -20,8 +20,5 @@ public class CreateUserRequestDto
     [StringLength(100)]
     public string? FullName { get; set; }
 
-    [Required]
-    public string Role { get; set; } = "Student";
-
     public bool IsActive { get; set; } = true;
 }
