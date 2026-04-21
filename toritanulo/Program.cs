@@ -12,6 +12,10 @@ using toritanulo.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
 builder.Configuration.AddEnvironmentVariables(prefix: "TORITANULO_");
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 

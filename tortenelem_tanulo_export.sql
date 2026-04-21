@@ -1,6 +1,6 @@
 -- MariaDB dump 10.19  Distrib 10.4.32-MariaDB, for Win64 (AMD64)
 --
--- Host: localhost    Database: tortenelem_tanulo
+-- Host: 127.0.0.1    Database: tortenelem_tanulo
 -- ------------------------------------------------------
 -- Server version	10.4.32-MariaDB
 
@@ -524,4 +524,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-04-19 21:44:13
+-- Dump completed on 2026-04-21 11:59:53
