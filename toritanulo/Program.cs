@@ -64,8 +64,18 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
-
 builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAllOrigins",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
+    
+/*builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
@@ -95,7 +105,7 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
-
+*/
 var jwtSettings = builder.Configuration.GetSection("Jwt").Get<JwtSettings>()
     ?? throw new InvalidOperationException("A Jwt beállítások hiányoznak.");
 
@@ -132,12 +142,8 @@ builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -150,9 +156,8 @@ app.UseExceptionHandler(errorApp =>
         await context.Response.WriteAsJsonAsync(new { message = "Váratlan szerverhiba történt. Próbáld újra később." });
     });
 });
-
-app.UseHttpsRedirection();
-app.UseCors("AllowFrontend");
+app.UseCors("AllowAllOrigins");
+//app.UseCors("AllowFrontend");
 app.UseAuthentication();
 app.UseAuthorization();
 
