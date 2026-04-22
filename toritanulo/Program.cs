@@ -64,6 +64,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+builder.Services.AddScoped<EmeltKerdesbankImportService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAllOrigins",
@@ -170,6 +171,7 @@ using (var scope = app.Services.CreateScope())
 
     dbContext.Database.EnsureCreated();
     await DatabaseSeeder.SeedAsync(services);
+    await services.GetRequiredService<EmeltKerdesbankImportService>().ImportAsync();
 }
 
 app.Run();

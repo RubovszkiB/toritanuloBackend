@@ -24,6 +24,9 @@ public class ApplicationDbContext : DbContext
     public DbSet<TesztKerdes> TesztKerdesek => Set<TesztKerdes>();
     public DbSet<TesztProbalkozas> TesztProbalkozasok => Set<TesztProbalkozas>();
     public DbSet<TesztValasz> TesztValaszok => Set<TesztValasz>();
+    public DbSet<EmeltKerdesbankTema> EmeltKerdesbankTemak => Set<EmeltKerdesbankTema>();
+    public DbSet<EmeltKerdesbankResztema> EmeltKerdesbankResztemak => Set<EmeltKerdesbankResztema>();
+    public DbSet<EmeltKerdesbankKerdes> EmeltKerdesbankKerdesek => Set<EmeltKerdesbankKerdes>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -44,6 +47,7 @@ public class ApplicationDbContext : DbContext
         ConfigureTesztKerdesek(modelBuilder);
         ConfigureTesztProbalkozasok(modelBuilder);
         ConfigureTesztValaszok(modelBuilder);
+        ConfigureEmeltKerdesbank(modelBuilder);
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -477,6 +481,87 @@ public class ApplicationDbContext : DbContext
             entity.HasOne(x => x.Kerdes)
                 .WithMany(x => x.TesztValaszok)
                 .HasForeignKey(x => x.KerdesId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+    }
+
+    private static void ConfigureEmeltKerdesbank(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<EmeltKerdesbankTema>(entity =>
+        {
+            entity.ToTable("emelt_kerdesbank_temak");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(x => x.EraId).HasColumnName("era_id").HasMaxLength(80).IsRequired();
+            entity.Property(x => x.Cim).HasColumnName("cim").HasMaxLength(255).IsRequired();
+            entity.Property(x => x.KovetelmenyTartomany).HasColumnName("kovetelmeny_tartomany").HasMaxLength(100);
+            entity.Property(x => x.Sorszam).HasColumnName("sorszam").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.Aktiv).HasColumnName("aktiv").HasDefaultValue(true).IsRequired();
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
+            entity.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
+            entity.HasIndex(x => x.EraId).IsUnique();
+            entity.HasIndex(x => x.Sorszam);
+        });
+
+        modelBuilder.Entity<EmeltKerdesbankResztema>(entity =>
+        {
+            entity.ToTable("emelt_kerdesbank_resztemak");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(x => x.TemaId).HasColumnName("tema_id").IsRequired();
+            entity.Property(x => x.RequirementRef).HasColumnName("requirement_ref").HasMaxLength(80).IsRequired();
+            entity.Property(x => x.Cim).HasColumnName("cim").HasMaxLength(255).IsRequired();
+            entity.Property(x => x.Scope).HasColumnName("scope").HasMaxLength(40).HasDefaultValue("vegyes").IsRequired();
+            entity.Property(x => x.Sorszam).HasColumnName("sorszam").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.Aktiv).HasColumnName("aktiv").HasDefaultValue(true).IsRequired();
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
+            entity.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
+            entity.HasIndex(x => new { x.TemaId, x.RequirementRef, x.Cim }).IsUnique();
+            entity.HasOne(x => x.Tema)
+                .WithMany(x => x.Resztemak)
+                .HasForeignKey(x => x.TemaId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<EmeltKerdesbankKerdes>(entity =>
+        {
+            entity.ToTable("emelt_kerdesbank_kerdesek");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.Id).HasColumnName("id").ValueGeneratedOnAdd();
+            entity.Property(x => x.TemaId).HasColumnName("tema_id").IsRequired();
+            entity.Property(x => x.ResztemaId).HasColumnName("resztema_id").IsRequired();
+            entity.Property(x => x.KulsoAzonosito).HasColumnName("kulso_azonosito").HasMaxLength(80).IsRequired();
+            entity.Property(x => x.KerdesTipus).HasColumnName("kerdes_tipus").HasMaxLength(80).IsRequired();
+            entity.Property(x => x.KerdesSzoveg).HasColumnName("kerdes_szoveg").HasColumnType("text").IsRequired();
+            entity.Property(x => x.Instrukcio).HasColumnName("instrukcio").HasColumnType("text");
+            entity.Property(x => x.Magyarazat).HasColumnName("magyarazat").HasColumnType("text");
+            entity.Property(x => x.Nehezseg).HasColumnName("nehezseg").HasMaxLength(30).HasDefaultValue("hard").IsRequired();
+            entity.Property(x => x.Scope).HasColumnName("scope").HasMaxLength(40).HasDefaultValue("vegyes").IsRequired();
+            entity.Property(x => x.Kategoria).HasColumnName("kategoria").HasMaxLength(40).HasDefaultValue("vegyes").IsRequired();
+            entity.Property(x => x.Forrasos).HasColumnName("forrasos").HasDefaultValue(false).IsRequired();
+            entity.Property(x => x.ExamInspired).HasColumnName("exam_inspired").HasDefaultValue(false).IsRequired();
+            entity.Property(x => x.Sorszam).HasColumnName("sorszam").HasDefaultValue(0).IsRequired();
+            entity.Property(x => x.InteractionJson).HasColumnName("interaction_json").HasColumnType("json").IsRequired();
+            entity.Property(x => x.SourceBlocksJson).HasColumnName("source_blocks_json").HasColumnType("json").IsRequired();
+            entity.Property(x => x.KnowledgeElementsJson).HasColumnName("knowledge_elements_json").HasColumnType("json").IsRequired();
+            entity.Property(x => x.TagsJson).HasColumnName("tags_json").HasColumnType("json").IsRequired();
+            entity.Property(x => x.RawJson).HasColumnName("raw_json").HasColumnType("json").IsRequired();
+            entity.Property(x => x.Aktiv).HasColumnName("aktiv").HasDefaultValue(true).IsRequired();
+            entity.Property(x => x.CreatedAt).HasColumnName("created_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").IsRequired();
+            entity.Property(x => x.UpdatedAt).HasColumnName("updated_at").HasColumnType("datetime").HasDefaultValueSql("CURRENT_TIMESTAMP").ValueGeneratedOnAddOrUpdate().IsRequired();
+            entity.HasIndex(x => x.KulsoAzonosito).IsUnique();
+            entity.HasIndex(x => x.TemaId);
+            entity.HasIndex(x => x.ResztemaId);
+            entity.HasIndex(x => x.KerdesTipus);
+            entity.HasIndex(x => x.Kategoria);
+            entity.HasIndex(x => x.Forrasos);
+            entity.HasOne(x => x.Tema)
+                .WithMany()
+                .HasForeignKey(x => x.TemaId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(x => x.Resztema)
+                .WithMany(x => x.Kerdesek)
+                .HasForeignKey(x => x.ResztemaId)
                 .OnDelete(DeleteBehavior.Cascade);
         });
     }

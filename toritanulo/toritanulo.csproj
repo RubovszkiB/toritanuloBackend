@@ -13,4 +13,8 @@
     <PackageReference Include="Pomelo.EntityFrameworkCore.MySql" Version="8.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="Data\emelt_tortenelem_teljes_kerdesbank_codexbarat_v2_forrasos.json" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>
